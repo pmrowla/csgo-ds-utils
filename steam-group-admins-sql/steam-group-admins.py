@@ -35,7 +35,15 @@ def gid_to_id64(gid):
 def get_users(gid):
     """Returns a list of id64's"""
     url = 'http://steamcommunity.com/gid/%d/memberslistxml/?xml=1' % gid_to_id64(gid)
-    xml = urllib2.urlopen(url).read()
+    xml = ''
+    try:
+        xml = urllib2.urlopen(url).read()
+    except urllib2.HTTPError, e:
+        if e.code == 503:
+            # 503 means the steamcommunity service is temporarily unavailable.
+            # just bail out gracefully if this happens
+            sys.exit()
+        raise e
     root = ET.fromstring(xml)
     users = []
     for id64 in root.iter('steamID64'):
