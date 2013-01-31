@@ -14,6 +14,7 @@ if config.db_type  == 'mysql':
     import MySQLdb
     db = MySQLdb.connect(user=config.db_user, passwd=config.db_pass,
                          db=config.db_database)
+    db.autocommit(True)
 else:
     sys.exit('Unsupported db type')
 
@@ -88,7 +89,7 @@ def add_group(name, flags='', immunity=0):
     if result:
         (id,) = result
     else:
-        c.execute("""INSERT INTO sm_groups (name, flags, immunity)
+        c.execute("""INSERT INTO sm_groups (name, flags, immunity_level)
                   VALUES (%s, %s, %s)""",
                   (name, flags, immunity))
         c.execute("""SELECT id FROM sm_groups WHERE name = %s""", name)
